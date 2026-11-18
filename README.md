@@ -68,3 +68,8 @@ Copy that APK to your Android phone and open it to install. You may need to allo
 - A release APK has not been compiled in this build environment because the Flutter SDK and Android SDK are not installed here. Use `BUILD-APK.bat` on a Windows machine with Flutter and Android Studio installed to generate the installable APK.
 - Offline mode requires the app and account to have been initialized online at least once. First-time registration/login cannot work without internet.
 - Connectivity status is only an indication; sync failures are caught and the pending local records remain saved for retry.
+
+
+## Browser website version
+
+The browser-ready version lives in [`web-app/`](web-app/README.md). It uses React + TypeScript, IndexedDB for local offline records, and the same Supabase tables as the Flutter Android app. To deploy it on Vercel, import this repository and set the project Root Directory to `web-app` (Vite, `npm run build`, output `dist`). The Android app remains in the repository root and `lib/`.
