@@ -45,6 +45,28 @@ jobs:
       - name: Generate Android platform
         run: flutter create --platforms=android --org com.reaamparo --project-name kwarta_budget_tracker .
 
+      - name: Add Android network permissions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          content = manifest.read_text(encoding="utf-8")
+          permissions = [
+              '    <uses-permission android:name="android.permission.INTERNET" />',
+              '    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />',
+          ]
+          missing = [permission for permission in permissions if permission not in content]
+          if missing:
+              content = content.replace("<application", "\\n".join(missing) + "\\n\\n    <application", 1)
+          manifest.write_text(content, encoding="utf-8")
+          for permission in permissions:
+              if permission not in content:
+                  raise SystemExit(f"Permission was not added: {permission}")
+          print("Android INTERNET and ACCESS_NETWORK_STATE permissions are present.")
+          PY
+
       - name: Install dependencies
         run: flutter pub get
 
