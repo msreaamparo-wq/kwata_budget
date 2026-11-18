@@ -59,7 +59,7 @@ jobs:
           ]
           missing = [permission for permission in permissions if permission not in content]
           if missing:
-              content = content.replace("<application", "\\n".join(missing) + "\\n\\n    <application", 1)
+              content = content.replace("<application", "\n".join(missing) + "\n\n    <application", 1)
           manifest.write_text(content, encoding="utf-8")
           for permission in permissions:
               if permission not in content:
