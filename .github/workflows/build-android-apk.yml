@@ -1,0 +1,70 @@
+name: Build and publish Kwarta Android APK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'supabase/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/build-android-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kwarta-android-release
+  cancel-in-progress: false
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install Flutter stable
+        shell: bash
+        run: |
+          git clone --depth 1 --branch stable https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Flutter and Android tools
+        run: |
+          flutter --version
+          flutter doctor -v
+          yes | flutter doctor --android-licenses || true
+
+      - name: Generate Android platform
+        run: flutter create --platforms=android --org com.reaamparo --project-name kwarta_budget_tracker .
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Publish APK as a GitHub Release
+        env:
+          GH_TOKEN: \${{ github.token }}
+          RUN_NUMBER: \${{ github.run_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/app/outputs/flutter-apk/app-release.apk"
+          test -s "$APK"
+          TAG="v1.0.\${RUN_NUMBER}"
+          gh release create "$TAG" "$APK#Kwarta-\${TAG}.apk" \
+            --title "Kwarta Android \${TAG}" \
+            --notes "Installable Android APK for Kwarta Budget Tracker.
+
+          Built automatically from commit \${GITHUB_SHA}.
+          Download Kwarta-\${TAG}.apk below and install it on an Android phone." \
+            --latest
