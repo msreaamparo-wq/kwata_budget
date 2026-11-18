@@ -1,0 +1,17 @@
+KWARTA - NATIVE ANDROID APP
+
+IMPORTANT: This is a Flutter Android source project, NOT the website version.
+
+TO BUILD YOUR APK ON WINDOWS:
+1. Extract the ZIP.
+2. Ensure Flutter + Android Studio/Android SDK are installed.
+3. Open the extracted folder.
+4. Double-click BUILD-APK.bat.
+5. Wait for BUILD SUCCESSFUL.
+6. Find the APK in build\app\outputs\flutter-apk\app-release.apk.
+7. Copy the APK to your phone and install it.
+
+The app saves records to SQLite on the phone first. Supabase is used for cloud sync.
+The first sign-in requires internet. After signing in, records can be added offline.
+
+See README.md for full setup notes.
